@@ -1,0 +1,17 @@
+Contents of a rule:
+
+
+Counters
+L3 Protocol                -> -4, -6  --  v4, v6, both
+L4 Protocol                -> -p      --  TCP, UDP, ICMP, any
+Source/Destination IP      -> -s, -d
+in/out Interface           -> -i, -o
+Module                     -> -m
+Module Args
+Jump/Goto                  -> -j, -g
+Action                     -> <chain name>, ACCEPT, DROP, REJECT, RETURN, MASQUERADE, <custom>
+
+
+
+
+Chain Policy!
