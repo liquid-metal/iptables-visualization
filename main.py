@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.behaviors import DragBehavior
+from kivy.uix.image import Image
 from kivy.lang import Builder
 
 import json
@@ -42,6 +43,10 @@ class ChainWidget(DragBehavior, Widget):
             layout.add_widget(r)
 
 
+class OverviewWidget(Image):
+    pass
+
+
 class MyApp(App):
     def __init__(self):
         self.chains = [Chain('chain-name', [Rule('rule1'), Rule('rule2')])]
@@ -49,12 +54,17 @@ class MyApp(App):
 
     def build(self):
         root = Builder.load_file('root.kv')
+
+        overview = Builder.load_file('overview.kv')
+
+        node_view = Builder.load_file('node_view.kv')
         pos = [10, 500]
         for c in self.chains:
             w = ChainWidget(c)
             w.pos = pos
-            root.add_widget(w)
+            node_view.add_widget(w)
             pos[1] -= 250
+        root.children[0].add_widget(node_view)
         return root
 
 
