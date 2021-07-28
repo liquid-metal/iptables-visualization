@@ -14,7 +14,7 @@
         pos: root.x + 15, root.y
         size: root.width - 30, root.height
         text_size: self.size
-        text: root.rule.content
+        text: root.rule.raw
         halign: 'left'
         valign: 'center'
 
@@ -45,11 +45,15 @@
             size: 10, 30
             size_hint: 1, None
 
-Widget:
+<NodeViewWidget>:
     canvas:
         Color:
             rgba: 0, 0, 0, 1
         Rectangle:
             pos: self.pos
             size: self.size
+
+Widget:
+    NodeViewWidget:
+        size: root.size
 

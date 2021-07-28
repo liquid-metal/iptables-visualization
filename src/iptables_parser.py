@@ -3,55 +3,7 @@ import pprint
 import re
 import json
 
-
-class Table:
-    def __init__(self, name, chains):
-        self.name = name
-        self.chains = chains
-
-    def __str__(self):
-        return f'Table {{ {self.name}, {str(self.chains)} }}'
-
-    def __repr__(self):
-        return self.__str__()
-
-
-class Chain:
-    def __init__(self, name, rules, is_default=False, default_policy='ACCEPT'):
-        self.name = name
-        self.rules = rules
-        self.is_default = is_default
-        self.default_policy = default_policy
-
-    def __str__(self):
-        return f'Chain {{ {self.name}, {self.is_default}, {self.default_policy}, {str(self.rules)} }}'
-
-    def __repr(self):
-        return self.__str__()
-
-
-class Rule:
-    def __init__(self, l3_protocol, l4_protocol, source_address, destination_address,
-            in_interface, out_interface, match_module, match_parameters, action,
-            target_module, target_parameters, raw):
-        self.l3_protocol = l3_protocol
-        self.l4_protocol = l4_protocol
-        self.source_address = source_address
-        self.destination_address = destination_address
-        self.in_interface = in_interface
-        self.out_interface = out_interface
-        self.match_module = match_module
-        self.match_parameters = match_parameters
-        self.action = action
-        self.target_module = target_module
-        self.target_parameters = target_parameters
-        self.raw = raw
-
-    def __str__(self):
-        return f'Rule {{ {self.l3_protocol}, {self.l4_protocol}, {self.source_address}, {self.destination_address}, {self.in_interface}, {self.out_interface}, {self.match_module}, {self.match_parameters}, {self.action}, {self.target_module}, {self.target_parameters}, {self.raw} }}'
-
-    def __repr__(self):
-        return self.__str__()
+import model
 
 
 def parse_tables_and_chains(contents):
@@ -141,7 +93,7 @@ def parse_rules(raw_dict, version):
                 # FIXME target_parameters
                 target_parameters = None
 
-                rule = Rule(l3_protocol=l3_protocol,
+                rule = model.Rule(l3_protocol=l3_protocol,
                         l4_protocol=l4_protocol,
                         source_address=source_address,
                         destination_address=destination_address,
@@ -163,10 +115,10 @@ def create_objects(raw_dict):
     for table in raw_dict:
         chains = []
         for chain in raw_dict[table]:
-            chains.append(Chain(chain, raw_dict[table][chain]['rules'],
+            chains.append(model.Chain(chain, raw_dict[table][chain]['rules'],
                     is_default=(raw_dict[table][chain]['default_policy']!='-'),
                     default_policy=raw_dict[table][chain]['default_policy']))
-        tables.append(Table(table, chains))
+        tables.append(model.Table(table, chains))
     return tables
 
 
@@ -178,12 +130,4 @@ def parse_iptables_save(path, version):
     raw_dict = parse_tables_and_chains(contents)
     raw_dict = parse_rules(raw_dict, version)
     return create_objects(raw_dict)
-
-
-if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        print(f'usage: {sys.argv[0]} <path> <4/6>')
-        sys.exit(1)
-
-    tables = parse_iptables_save(sys.argv[1], sys.argv[2])
 
